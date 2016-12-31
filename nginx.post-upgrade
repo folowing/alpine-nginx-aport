@@ -3,7 +3,7 @@
 ver_new="$1"
 ver_old="$2"
 
-if [ "$(apk version -t "$ver_old" "1.11.8-r1")" = "<" ]; then
+if [ "$(apk version -t "$ver_old" "1.11.8-r0")" = "<" ]; then
 	cat 1>&2 <<-EOF
 	*
 	* The nginx package has been modified to use dynamic modules. Now there's
