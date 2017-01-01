@@ -37,35 +37,32 @@ build() {
         --http-log-path=/var/log/nginx/access.log \
         --pid-path=/var/run/nginx.pid \
         --lock-path=/var/run/nginx.lock \
-        --http-client-body-temp-path=/var/cache/nginx/client_temp \
-        --http-proxy-temp-path=/var/cache/nginx/proxy_temp \
-        --http-fastcgi-temp-path=/var/cache/nginx/fastcgi_temp \
-        --http-uwsgi-temp-path=/var/cache/nginx/uwsgi_temp \
-        --http-scgi-temp-path=/var/cache/nginx/scgi_temp \
         --user=$pkgusers \
         --group=$pkggroups \
-        --with-http_ssl_module \
-        --with-http_realip_module \
-        --with-http_addition_module \
-        --with-http_sub_module \
-        --with-http_dav_module \
-        --with-http_flv_module \
-        --with-http_mp4_module \
-        --with-http_gunzip_module \
-        --with-http_gzip_static_module \
-        --with-http_random_index_module \
-        --with-http_secure_link_module \
-        --with-http_slice_module \
-        --with-http_stub_status_module \
-        --with-http_auth_request_module \
+        --without-select_module \
+        --without-poll_module \
         --with-threads \
-        --with-stream \
-        --with-stream_ssl_module \
-        --with-stream_ssl_preread_module \
-        --with-stream_realip_module \
-        --with-compat \
         --with-file-aio \
+        --with-http_ssl_module \
         --with-http_v2_module \
+        --with-http_realip_module \
+        --with-http_stub_status_module \
+        \
+        --without-http_ssi_module \
+        --without-http_userid_module \
+        --without-http_map_module \
+        --without-http_fastcgi_module \
+        --without-http_uwsgi_module \
+        --without-http_scgi_module \
+        --without-http_memcached_module \
+        --without-http_empty_gif_module \
+        --with-stream \
+        --with-stream_realip_module \
+        --without-stream_map_module \
+        --http-client-body-temp-path=/var/cache/nginx/client_temp \
+        --http-proxy-temp-path=/var/cache/nginx/proxy_temp \
+        \
+        --with-pcre-jit \
         || return 1
 
     make || return 1
@@ -78,15 +75,22 @@ package() {
 
     cd "$pkgdir"
 
+    rm ./etc/nginx/fastcgi*
+    rm ./etc/nginx/scgi_params*
+    rm ./etc/nginx/uwsgi_params*
+    rm ./etc/nginx/koi-utf ./etc/nginx/koi-win ./etc/nginx/win-utf
+    rm ./etc/nginx/mime.types.default
+    rm ./etc/nginx/nginx.conf.default
+
     install -Dm644 "$srcdir"/nginx.conf ./etc/nginx/nginx.conf
     install -Dm644 "$srcdir"/default.conf ./etc/nginx/conf.d/default.conf
 
     install -dm755 -o $pkgusers -g $pkggroups ./var/lib/nginx
     install -dm700 -o $pkgusers -g $pkggroups ./var/cache/nginx
     install -dm755 -o $pkgusers -g $pkggroups ./var/log/nginx
-    install -dm755 -o $pkgusers -g $pkggroups ./$_modules_dir/
+    #install -dm755 -o $pkgusers -g $pkggroups ./$_modules_dir/
 
-    ln -sf /$_modules_dir ./etc/nginx/modules
+    #ln -sf /$_modules_dir ./etc/nginx/modules
 }
 
 
